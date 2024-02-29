@@ -1,46 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { Container } from "../components/globals/Container";
-import FollowTable from "../components/FollowTable";
-import UserCard from "../components/UserCard";
-import TicketFeed from "../components/TicketFeed";
-import Layout from "../components/Layout";
-import useAxios from "../utils/useAxios";
-import { jwtDecode } from "jwt-decode";
+import React, { useState, useEffect, useContext } from "react";
+import { Container } from "../../components/globals/Container";
+import FollowTable from "../../components/authUser/FollowTable";
+import UserCard from "../../components/authUser/UserCard";
+import TicketFeed from "../../components/authUser/TicketFeed";
+import Layout from "../../components/Layout";
+import useAxios from "../../utils/useAxios";
+import AuthContext from "../../context/AuthContext";
 
 function ProfilePage() {
   const activeTab = "";
+  const { user } = useContext(AuthContext);
   const [profile, setProfile] = useState({});
-  const [user_id, setUserId] = useState("");
   const [clubs, setClubs] = useState([]);
   const [tickets, setTickets] = useState([]);
   const api = useAxios();
 
-  // This is for the test endpoint from the tutorial
-  const token = localStorage.getItem("authTokens");
+  useEffect(() => {
+    if (user) {
+      api
+        .get(`api/profiles/${user.user_id}`)
+        .then((res) => {
+          setProfile({
+            username: user.username,
+            email: user.email,
+            student_id: user.student_id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            profile_pic: res.data.profile_picture,
+            birthday: res.data.birthday,
+            course: res.data.course,
+            year: res.data.year,
+            bio: res.data.description,
+            verified: res.data.verified,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user]);
 
   useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.user_id);
-      setProfile({
-        username: decoded.username,
-        email: decoded.email,
-        student_id: decoded.student_id,
-        first_name: decoded.first_name,
-        last_name: decoded.last_name,
-        profile_pic: decoded.profile_pic,
-        birthday: decoded.birthday,
-        course: decoded.course,
-        year: decoded.year,
-        bio: decoded.description,
-        verified: decoded.verified,
-      });
-    }
-  }, [token]);
-  useEffect(() => {
-    if (user_id) {
+    if (user.user_id) {
       api
-        .get(`/user/${user_id}/follows/`)
+        .get(`/user/${user.user_id}/follows/`)
         .then((res) => {
           setClubs(res.data);
         })
@@ -48,18 +51,18 @@ function ProfilePage() {
           console.log(err);
         });
     }
-  }, [user_id]);
+  }, [user.user_id]);
 
   useEffect(() => {
-    if (user_id) {
+    if (user.user_id) {
       api
-        .get(`/user/${user_id}/tickets/`)
+        .get(`/user/${user.user_id}/tickets/`)
         .then((res) => {
           setTickets(res.data);
         })
         .catch((err) => console.log(err));
     }
-  }, [user_id]);
+  }, [user.user_id]);
 
   return (
     <Layout activeTab={activeTab}>
