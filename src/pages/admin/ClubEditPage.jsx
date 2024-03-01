@@ -4,7 +4,6 @@ import AuthContext from "../../context/AuthContext";
 import { Link, useParams } from "react-router-dom";
 import ClubSettingsLayout from "../../components/clubSettings/ClubSettingsLayout";
 import NotFound from "../NotFound";
-import SpinningMouse from "../../components/coolComponents/SpinningMouse";
 const swal = require("sweetalert2");
 
 function ClubEditPage() {

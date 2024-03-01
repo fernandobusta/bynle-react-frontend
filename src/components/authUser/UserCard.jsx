@@ -4,6 +4,7 @@ import {
   AtSymbolIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/20/solid";
+import { Link } from "react-router-dom";
 
 export default function UserCard(props) {
   return (
@@ -70,9 +71,12 @@ export default function UserCard(props) {
         </dl>
         {/* Either Change details or See other students, or nothing at all, placeholder atm */}
         <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/edit-profile"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Change Details <span aria-hidden="true">&rarr;</span>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

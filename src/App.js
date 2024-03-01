@@ -5,7 +5,7 @@ import { PrivateRoute, PrivateRouteForScanners } from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 
 import HomePage from "./pages/HomePage";
-import ProfilePage from "./pages/ProfilePage";
+import ProfilePage from "./pages/authUser/ProfilePage";
 import EventSinglePage from "./pages/EventSinglePage";
 import PaymentPage from "./pages/PaymentPage";
 import ClubProfilePage from "./pages/ClubProfilePage";
@@ -28,6 +28,7 @@ import SuccessPaymentPage from "./pages/StripePaymentSucess";
 import PublicUserProfilePage from "./pages/PublicUserProfilePage";
 import TransferPaymentPage from "./pages/TransferPaymentPage";
 import StripeTransferSuccessPage from "./pages/StripeTransferSuccessPage";
+import EditProfilePage from "./pages/authUser/EditProfilePage";
 
 import "./styles/fancytitle.css";
 import "./styles/rotationpile.css";
@@ -57,6 +58,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/club/:clubId" element={<ClubProfilePage />} />
             <Route path="/event/:eventId" element={<EventSinglePage />} />
             <Route path="/event/:eventId/payment" element={<PaymentPage />} />
