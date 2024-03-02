@@ -98,6 +98,22 @@ function ClubManageEventsPage() {
       .post("/create-ticket-scanner/", newTicketScanner)
       .then((res) => {
         getTicketScanners(newTicketScanner.event_id);
+        swal.fire({
+          title: "Ticket scanner created successfully",
+          icon: "success",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+        // Clear the form
+        setNewTicketScanner({
+          username: "",
+          password: "",
+          email: "",
+          event_id: newTicketScanner.event_id,
+        });
       })
       .catch((err) => {
         console.log(err);

@@ -14,6 +14,7 @@ function Registerpage() {
   const [course, setCourse] = useState("");
   const [year, setYear] = useState("");
   const [description, setDescription] = useState("");
+  const [account_type, setAccountType] = useState("Public");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
 
@@ -21,6 +22,15 @@ function Registerpage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Change value for account_type (PUB: Public, PRI: Private, CLO: Closed)
+    let ac_type = "";
+    if (account_type === "Public") {
+      ac_type = "PUB";
+    } else if (account_type === "Private") {
+      ac_type = "PRI";
+    } else {
+      ac_type = "CLO";
+    }
     registerUser(
       email,
       username,
@@ -30,6 +40,7 @@ function Registerpage() {
       course,
       year,
       description,
+      ac_type,
       password,
       password2
     );
@@ -82,6 +93,24 @@ function Registerpage() {
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
                     </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="account_type"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Account Type
+                    </label>
+                    <select
+                      id="account_type"
+                      name="account_type"
+                      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      onChange={(e) => setAccountType(e.target.value)}
+                    >
+                      <option>Public</option>
+                      <option>Private</option>
+                      <option>Closed</option>
+                    </select>
                   </div>
                   <div>
                     <label
