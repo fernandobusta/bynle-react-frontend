@@ -6,17 +6,19 @@ import { useParams, Link } from "react-router-dom";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import EventsList from "../components/profileComponents/EventsList";
 import AuthContext from "../context/AuthContext";
+import userPicture from "../images/default/default_profile_picture.jpg";
 
 function PublicUserProfilePage() {
   const activeTab = "Friends";
 
   const { user } = useContext(AuthContext);
   const { username } = useParams();
-  const [publicProfile, setPublicProfile] = useState({}); // This is for the public profile
   const api = useAxios();
 
-  const [friendship, setFriendship] = useState(null);
-  const [friendshipSender, setFriendshipSender] = useState("");
+  // If they are friends, or account is public:
+  const [publicProfile, setPublicProfile] = useState({}); // This is for the public profile
+
+  const [friendship, setFriendship] = useState("");
   const [friendshipChanged, setFriendshipChanged] = useState(false);
 
   const [friendsInCommon, setFriendsInCommon] = useState([]); // This is for the friends in common
@@ -29,55 +31,31 @@ function PublicUserProfilePage() {
     api
       .get(`/user/${username}/public-profile/`)
       .then((res) => {
+        console.log(res.data);
         setPublicProfile(res.data);
+        setFriendship(res.data.friendship_status);
       })
-      .catch((err) => console.log(err));
-  }, [username]);
-
-  // Check if the user is friends with the public profile
-  useEffect(() => {
-    if (username !== user.username) {
-      api
-        .get(`user/${user.user_id}/friendship/${username}/`)
-        .then((res) => {
-          if (res.data.status === "True") {
-            setFriendship(true);
-          } else if (res.data.status === "False") {
-            setFriendship(false);
-            if (res.data.sender === "current") {
-              // The current user sent a request
-              setFriendshipSender("current");
-            } else if (res.data.sender === "other") {
-              // The other user sent a request
-              setFriendshipSender("other");
-            }
-          } else if (res.data.status === "None") {
-            setFriendship(false);
-          }
-        })
-        .catch((err) => console.log(err));
-      // Refresh the button to show the correct status
-      showOnFriendship();
-    } else {
-      // The user's profile
-      setFriendship(null);
-    }
-  }, [friendshipChanged, user.user_id, username]);
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [username, friendshipChanged]);
 
   // Get the events the user is attending
   useEffect(() => {
-    api
-      .get(`user/${username}/events/`)
-      .then((res) => {
-        setEventsActive(res.data.active);
-        setEventsUsed(res.data.used);
-      })
-      .catch((err) => console.log(err));
-  }, [username]);
+    if (friendship !== "closed") {
+      api
+        .get(`user/${username}/events/`)
+        .then((res) => {
+          setEventsActive(res.data.active);
+          setEventsUsed(res.data.used);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [username, friendship]);
 
   // Get the friends in common
   useEffect(() => {
-    if (user.user_id) {
+    if (friendship !== "closed") {
       api
         .get(`common-friends/${user.user_id}/${username}/`)
         .then((res) => {
@@ -85,11 +63,11 @@ function PublicUserProfilePage() {
         })
         .catch((err) => console.log(err));
     }
-  }, [user.user_id, username]);
+  }, [user.user_id, username, friendship]);
 
   // Get the common clubs followed
   useEffect(() => {
-    if (user.user_id) {
+    if (friendship !== "closed") {
       api
         .get(`common-followed-clubs/${user.user_id}/${username}/`)
         .then((res) => {
@@ -97,7 +75,7 @@ function PublicUserProfilePage() {
         })
         .catch((err) => console.log(err));
     }
-  }, [user.user_id, username]);
+  }, [user.user_id, username, friendship]);
 
   const handleDelete = (e) => {
     e.preventDefault();
@@ -130,9 +108,33 @@ function PublicUserProfilePage() {
   };
 
   const showOnFriendship = () => {
-    if (friendship === null) {
-      return <div></div>;
-    } else if (friendship === true) {
+    if (friendship === "accept") {
+      return (
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleDelete}
+            className="pl-3 inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-md font-medium text-red-700 ring-1 ring-inset ring-red-600 hover:bg-red-400 hover:text-red-900"
+          >
+            Decline
+          </button>
+          <button
+            onClick={handleApprove}
+            className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-md font-medium text-blue-700 ring-1 ring-inset ring-blue-600 hover:bg-blue-400 hover:text-blue-900"
+          >
+            Approve
+          </button>
+        </div>
+      );
+    } else if (friendship === "pending") {
+      return (
+        <button
+          onClick={handleDelete}
+          className="inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-md font-medium text-gray-700 ring-1 ring-inset ring-gray-600 hover:bg-gray-400 hover:text-gray-900"
+        >
+          Pending
+        </button>
+      );
+    } else if (friendship === "friends") {
       return (
         <button
           onClick={handleDelete}
@@ -141,43 +143,81 @@ function PublicUserProfilePage() {
           Friends
         </button>
       );
-    } else if (friendship === false) {
-      if (friendshipSender === "current") {
-        return (
-          <button
-            onClick={handleDelete}
-            className="inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-md font-medium text-gray-700 ring-1 ring-inset ring-gray-600 hover:bg-gray-400 hover:text-gray-900"
-          >
-            Pending
-          </button>
-        );
-      } else if (friendshipSender === "other") {
-        return (
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={handleDelete}
-              className="pl-3 inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-md font-medium text-red-700 ring-1 ring-inset ring-red-600 hover:bg-red-400 hover:text-red-900"
-            >
-              Decline
-            </button>
-            <button
-              onClick={handleApprove}
-              className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-md font-medium text-blue-700 ring-1 ring-inset ring-blue-600 hover:bg-blue-400 hover:text-blue-900"
-            >
-              Approve
-            </button>
+    } else if (friendship === "none") {
+      return (
+        <button
+          onClick={handleAdd}
+          className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-md font-medium text-blue-700 ring-1 ring-inset ring-blue-600"
+        >
+          Request
+        </button>
+      );
+    } else {
+      // closed profile
+      return <div></div>;
+    }
+  };
+
+  const userProfileData = () => {
+    // Only render if the profile is not closed
+    if (friendship !== "closed") {
+      return (
+        <div className="grid grid-cols-1 divide-y divide-gray-200 border-t border-gray-200 bg-gray-50 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="flex -space-x-4 rtl:space-x-reverse justify-self-center px-6 py-3 ">
+            {friendsInCommon.slice(0, 4).map((friend, friendIdx) => (
+              <img
+                key={friendIdx}
+                className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                src={friend.profile_picture}
+                alt=""
+              />
+            ))}
+
+            {friendsInCommon.length > 4 && (
+              <Link
+                className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
+                to={""}
+              >
+                +{friendsInCommon.length - 4}
+              </Link>
+            )}
+            {friendsInCommon.length === 0 && (
+              <p className="text-center text-sm font-medium pt-2">
+                No friends in common
+              </p>
+            )}
           </div>
-        );
-      } else {
-        return (
-          <button
-            onClick={handleAdd}
-            className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-md font-medium text-blue-700 ring-1 ring-inset ring-blue-600"
-          >
-            Request
-          </button>
-        );
-      }
+          <div className="px-6 text-center text-sm font-medium">
+            <div className="flex -space-x-4 rtl:space-x-reverse justify-self-center px-6 py-3 ">
+              {clubsInCommon.slice(0, 4).map((club) => (
+                <img
+                  key={club.id}
+                  className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                  src={club.club_logo}
+                  alt=""
+                />
+              ))}
+              {clubsInCommon.length > 4 && (
+                <Link
+                  className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
+                  to={""}
+                >
+                  +{clubsInCommon.length - 4}
+                </Link>
+              )}
+              {clubsInCommon.length === 0 && (
+                <p className="text-center text-sm font-medium pt-2 pl-6">
+                  No Clubs in common
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="px-6 py-5 text-center text-sm font-medium">
+            <span className="text-gray-900">Events attented</span>{" "}
+            <span className="text-gray-600">{eventsUsed.length}</span>
+          </div>
+        </div>
+      );
     }
   };
 
@@ -194,8 +234,8 @@ function PublicUserProfilePage() {
                 <div className="flex-shrink-0">
                   <img
                     className="mx-auto h-20 w-20 rounded-full"
-                    src={publicProfile.profile_picture}
-                    alt=""
+                    src={publicProfile.profile_picture || userPicture}
+                    alt={publicProfile.username}
                   />
                 </div>
                 <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
@@ -220,63 +260,9 @@ function PublicUserProfilePage() {
               {publicProfile.description}
             </div>
           </div>
-          <div className="grid grid-cols-1 divide-y divide-gray-200 border-t border-gray-200 bg-gray-50 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="flex -space-x-4 rtl:space-x-reverse justify-self-center px-6 py-3 ">
-              {friendsInCommon.slice(0, 4).map((friend, friendIdx) => (
-                <img
-                  key={friendIdx}
-                  className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-                  src={friend.profile_picture}
-                  alt=""
-                />
-              ))}
-
-              {friendsInCommon.length > 4 && (
-                <Link
-                  className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
-                  to={""}
-                >
-                  +{friendsInCommon.length - 4}
-                </Link>
-              )}
-              {friendsInCommon.length === 0 && (
-                <p className="text-center text-sm font-medium pt-2">
-                  No friends in common
-                </p>
-              )}
-            </div>
-            <div className="px-6 text-center text-sm font-medium">
-              <div className="flex -space-x-4 rtl:space-x-reverse justify-self-center px-6 py-3 ">
-                {clubsInCommon.slice(0, 4).map((club) => (
-                  <img
-                    key={club.id}
-                    className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-                    src={club.club_logo}
-                    alt=""
-                  />
-                ))}
-                {clubsInCommon.length > 4 && (
-                  <Link
-                    className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
-                    to={""}
-                  >
-                    +{clubsInCommon.length - 4}
-                  </Link>
-                )}
-                {clubsInCommon.length === 0 && (
-                  <p className="text-center text-sm font-medium pt-2 pl-6">
-                    No Clubs in common
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="px-6 py-5 text-center text-sm font-medium">
-              <span className="text-gray-900">Events attented</span>{" "}
-              <span className="text-gray-600">{eventsUsed.length}</span>
-            </div>
-          </div>
+          {userProfileData()}
         </div>
-        <EventsList events={eventsActive} />
+        {friendship !== "closed" && <EventsList events={eventsActive} />}
       </Container>
     </Layout>
   );

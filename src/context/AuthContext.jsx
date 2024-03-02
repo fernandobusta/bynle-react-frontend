@@ -84,6 +84,7 @@ export const AuthProvider = ({ children }) => {
     course,
     year,
     description,
+    account_type,
     password,
     password2
   ) => {
@@ -98,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         student_id,
         first_name,
         last_name,
+        account_type,
         password,
         password2,
         profile: {
