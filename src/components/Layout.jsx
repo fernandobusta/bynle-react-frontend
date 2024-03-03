@@ -4,60 +4,45 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Sidebar from "./globals/Sidebar";
 import DesktopSidebar from "./globals/DesktopSidebar";
-import { jwtDecode } from "jwt-decode";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import useAxios from "../utils/useAxios";
 import NotificationFlyout from "./globals/NotificationFlyout";
 import SearchUser from "./globals/SearchUser";
+import userPicture from "../images/default/default_profile_picture.jpg";
 
 export default function Layout(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logoutUser } = useContext(AuthContext);
-  const token = localStorage.getItem("authTokens");
   const [requests, setRequests] = useState([]);
   const [transferRequests, setTransferRequests] = useState(0);
   const [clubsAdmined, setClubsAdmined] = useState([]);
-  const [userId, setUserId] = useState("");
   const api = useAxios();
   const [friendshipChanged, setFriendshipChanged] = useState(false);
 
-  // If there is a token in localStorage
   useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      var user_id = decoded.user_id;
-      setUserId(user_id);
+    if (user.user_id) {
+      // Get the clubs the user is an admin of
       api
-        .get(`/user/${user_id}/admins/`)
+        .get(`/user/${user.user_id}/admins/`)
         .then((response) => {
           setClubsAdmined(response.data);
         })
         .catch((error) => {
           console.log(error);
         });
-    }
-  }, [token]);
 
-  // Get the pending requests
-  useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      var user_id = decoded.user_id;
+      // Get the pending requests
       api
-        .get(`/user/${user_id}/friends/pending`)
+        .get(`/user/${user.user_id}/friends/pending`)
         .then((response) => {
           setRequests(response.data);
         })
         .catch((error) => {
           console.log(error);
         });
-    }
-  }, [friendshipChanged]);
 
-  // Get pending transfer requests
-  useEffect(() => {
-    if (user) {
+      // Get pending transfer requests
       api
         .get(`user/${user.user_id}/received-transfer-request/`)
         .then((response) => {
@@ -67,26 +52,32 @@ export default function Layout(props) {
           console.log(error);
         });
     }
-  }, [user]);
+  }, [friendshipChanged, user.user_id]);
 
   const handleDelete = (username) => {
-    setFriendshipChanged(!friendshipChanged);
     api
-      .delete(`user/${userId}/friendship/${username}/`)
+      .delete(`user/${user.user_id}/friendship/${username}/`)
       .then((response) => {
-        // reload the page
-        window.location.reload();
+        // Update the state directly instead of reloading the page
+        setRequests((prevRequests) =>
+          prevRequests.filter((request) => request.username !== username)
+        );
+        setFriendshipChanged(!friendshipChanged);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   const handleApprove = (username) => {
-    setFriendshipChanged(!friendshipChanged);
     api
-      .post(`user/${userId}/friendship/${username}/`)
+      .post(`user/${user.user_id}/friendship/${username}/`)
       .then((response) => {
-        window.location.reload();
+        // Update the state directly instead of reloading the page
+        setRequests((prevRequests) =>
+          prevRequests.filter((request) => request.username !== username)
+        );
+        setFriendshipChanged(!friendshipChanged);
       })
       .catch((err) => {
         console.log(err);
@@ -200,7 +191,7 @@ export default function Layout(props) {
                 />
 
                 {/* Profile dropdown */}
-                {token === null && (
+                {user === null && (
                   <>
                     <Link
                       className="ml-4 text-sm font-semibold leading-6 text-gray-900"
@@ -218,13 +209,13 @@ export default function Layout(props) {
                     </Link>
                   </>
                 )}
-                {token !== null && (
+                {user !== null && (
                   <Menu as="div" className="relative">
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full bg-gray-50"
-                        src={user.profile_picture}
+                        src={user.profile_picture || userPicture}
                         alt=""
                       />
                       <span className="hidden lg:flex lg:items-center">

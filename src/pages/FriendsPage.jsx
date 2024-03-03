@@ -5,6 +5,8 @@ import useAxios from "../utils/useAxios";
 import { ChevronRightIcon, CheckBadgeIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import userPicture from "../images/default/default_profile_picture.jpg";
+const swal = require("sweetalert2");
 
 export default function FriendsPage() {
   const activeTab = "Friends";
@@ -20,15 +22,36 @@ export default function FriendsPage() {
         .then((res) => {
           setFriends(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          // Show an error message to the user
+          swal.fire({
+            title: "Error",
+            text: "Could not load friends",
+            icon: "error",
+          });
+        });
     }
   }, [user.user_id]);
 
   const handleDelete = (username) => {
-    api.delete(`user/${user.user_id}/friendship/${username}/`).catch((err) => {
-      console.log(err);
-    });
-    window.location.reload(false);
+    api
+      .delete(`user/${user.user_id}/friendship/${username}/`)
+      .then((response) => {
+        // Update the state directly instead of reloading the page
+        setFriends((prevFriends) =>
+          prevFriends.filter((friend) => friend.username !== username)
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        // Show an error message to the user
+        swal.fire({
+          title: "Error",
+          text: "Could not delete friend",
+          icon: "error",
+        });
+      });
   };
   return (
     <Layout activeTab={activeTab}>
@@ -53,7 +76,7 @@ export default function FriendsPage() {
                   <div className="flex min-w-0 gap-x-4">
                     <img
                       className="h-12 w-12 flex-none rounded-full bg-gray-50"
-                      src={friend.profile_picture}
+                      src={friend.profile_picture || userPicture}
                       alt=""
                     />
                     <div className="min-w-0 flex-auto">

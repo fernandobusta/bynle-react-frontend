@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import useAxios from "../../utils/useAxios";
 import AuthContext from "../../context/AuthContext";
+import userPicture from "../../images/default/default_profile_picture.jpg";
 
 export default function ClubAdminsTable({ clubId, newAdmins }) {
   const { user } = useContext(AuthContext);
@@ -77,7 +78,7 @@ export default function ClubAdminsTable({ clubId, newAdmins }) {
                         <div className="h-11 w-11 flex-shrink-0">
                           <img
                             className="h-11 w-11 rounded-full"
-                            src={admin.profile_picture}
+                            src={admin.profile_picture || userPicture}
                             alt=""
                           />
                         </div>
@@ -92,8 +93,10 @@ export default function ClubAdminsTable({ clubId, newAdmins }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{admin.course}</div>
-                      <div className="mt-1 text-gray-500">{admin.year}</div>
+                      <div className="text-gray-900">
+                        {admin.course}{" "}
+                        <span className="mt-1 text-gray-500">{admin.year}</span>
+                      </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">

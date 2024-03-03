@@ -1,6 +1,5 @@
 import {
   UserCircleIcon,
-  CakeIcon,
   AtSymbolIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/20/solid";
@@ -45,15 +44,6 @@ export default function UserCard(props) {
             </dt>
             <dd className="text-sm font-medium leading-6 text-gray-900">
               {props.profile.username}
-            </dd>
-          </div>
-          <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
-            <dt className="flex-none">
-              <span className="sr-only">Birthday</span>
-              <CakeIcon className="h-6 w-5 text-gray-400" aria-hidden="true" />
-            </dt>
-            <dd className="text-sm leading-6 text-gray-500">
-              <time dateTime="2023-01-31">{props.profile.birthday}</time>
             </dd>
           </div>
           <div className="mt-4 flex w-full flex-none gap-x-4 px-6">

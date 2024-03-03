@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAxios from "../utils/useAxios";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
+import eventCover from "../images/default/default_event_cover.jpg";
 const swal = require("sweetalert2");
 
 export default function EventOverview(props) {
@@ -146,7 +147,7 @@ export default function EventOverview(props) {
         <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
           <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
             <img
-              src={props.event.event_cover}
+              src={props.event.event_cover || eventCover}
               alt="Event Cover"
               className="h-full w-full object-cover object-center"
             />

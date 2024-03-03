@@ -1,4 +1,5 @@
 import { ChevronRightIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
+import clubLogo from "../../images/default/default_club_logo.jpg";
 
 export default function FollowTable(props) {
   return (
@@ -15,7 +16,7 @@ export default function FollowTable(props) {
             <div className="flex min-w-0 gap-x-4">
               <img
                 className="h-12 w-12 flex-none rounded-full bg-gray-50"
-                src={club.club_logo}
+                src={club.club_logo || clubLogo}
                 alt=""
               />
               <div className="min-w-0 flex-auto">

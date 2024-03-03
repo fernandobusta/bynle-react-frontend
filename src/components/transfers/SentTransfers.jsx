@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import useAxios from "../../utils/useAxios";
+import eventCover from "../../images/default/default_event_cover.jpg";
 const swal = require("sweetalert2");
 
 export default function SentTransfers({ user_id }) {
@@ -118,7 +119,7 @@ export default function SentTransfers({ user_id }) {
                           <div className="h-11 w-11 flex-shrink-0">
                             <img
                               className="h-11 w-11 rounded-full"
-                              src={transfer.event_cover}
+                              src={transfer.event_cover || eventCover}
                               alt={transfer.club_name}
                             />
                           </div>

@@ -27,7 +27,6 @@ function ProfilePage() {
             first_name: user.first_name,
             last_name: user.last_name,
             profile_pic: res.data.profile_picture,
-            birthday: res.data.birthday,
             course: res.data.course,
             year: res.data.year,
             bio: res.data.description,

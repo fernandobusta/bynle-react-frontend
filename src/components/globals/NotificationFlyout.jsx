@@ -8,6 +8,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { BellIcon } from "@heroicons/react/24/outline";
+import userPicture from "../../images/default/default_profile_picture.jpg";
 
 export default function NotificationFlyout(props) {
   const totalNotifications = props.requests.length + props.transferRequests;
@@ -54,7 +55,7 @@ export default function NotificationFlyout(props) {
                       {/* </div> */}
                       <div className="grid grid-cols-3 gap-2">
                         <img
-                          src={item.profile_picture}
+                          src={item.profile_picture || userPicture}
                           alt={item.username}
                           className="h-10 w-10 rounded-full flex items-center justify-center"
                           aria-hidden="true"

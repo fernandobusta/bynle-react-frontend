@@ -15,6 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import logo from "../../images/bynle-high-resolution-logo-black-transparent.png";
 import { SITE_URL } from "../Constants";
+import clubLogo from "../../images/default/default_club_logo.jpg";
 
 const navigation = [
   {
@@ -213,7 +214,7 @@ function ClubSetttingLayout(props) {
                     >
                       <img
                         className="h-8 w-8 rounded-full bg-gray-800"
-                        src={props.club_logo}
+                        src={props.club_logo || clubLogo}
                         alt={props.club_name}
                       />
                       <span className="sr-only">Club profile</span>
