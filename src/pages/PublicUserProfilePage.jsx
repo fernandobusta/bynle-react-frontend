@@ -7,6 +7,7 @@ import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import EventsList from "../components/profileComponents/EventsList";
 import AuthContext from "../context/AuthContext";
 import userPicture from "../images/default/default_profile_picture.jpg";
+import clubLogo from "../images/default/default_club_logo.jpg";
 
 function PublicUserProfilePage() {
   const activeTab = "Friends";
@@ -31,7 +32,6 @@ function PublicUserProfilePage() {
     api
       .get(`/user/${username}/public-profile/`)
       .then((res) => {
-        console.log(res.data);
         setPublicProfile(res.data);
         setFriendship(res.data.friendship_status);
       })
@@ -168,7 +168,7 @@ function PublicUserProfilePage() {
               <img
                 key={friendIdx}
                 className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-                src={friend.profile_picture}
+                src={friend.profile_picture || userPicture}
                 alt=""
               />
             ))}
@@ -193,7 +193,7 @@ function PublicUserProfilePage() {
                 <img
                   key={club.id}
                   className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-                  src={club.club_logo}
+                  src={club.club_logo || clubLogo}
                   alt=""
                 />
               ))}

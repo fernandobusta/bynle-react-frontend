@@ -10,87 +10,63 @@ import {
 } from "@heroicons/react/20/solid";
 import EventGallery from "../components/EventGallery";
 import Layout from "../components/Layout";
+import clubLogo from "../images/default/default_club_logo.jpg";
+import clubCover from "../images/default/default_club_cover.jpg";
 
 export default function ClubProfilePage() {
-  const [activeTab, setActiveTab] = useState("");
   const { user } = useContext(AuthContext);
-  const [isClubAdmin, setIsClubAdmin] = useState(false);
   const { clubId } = useParams();
+  const navigate = useNavigate();
+  const api = useAxios();
+
+  const [activeTab, setActiveTab] = useState("");
+  const [isClubAdmin, setIsClubAdmin] = useState(false);
   const [club, setClub] = useState([]);
   const [events, setEvents] = useState([]);
-  const api = useAxios();
   const [userFollowsClub, setUserFollowsClub] = useState(false);
-  const navigate = useNavigate();
 
-  // To check if they manage this club
   useEffect(() => {
     if (user) {
+      // Check if user manages this club
       api
         .get(`user/${user.user_id}/admins/${clubId}`)
+        .then((res) => setIsClubAdmin(res.data))
+        .catch((error) => console.log(error));
+
+      // Get club data
+      api
+        .get(`/api/clubs/${clubId}/`)
+        .then((res) => setClub(res.data))
+        .catch((err) => console.log(err));
+
+      // Get events for this club
+      api
+        .get(`/club/${clubId}/events/`)
         .then((res) => {
-          setIsClubAdmin(res.data);
+          setEvents(res.data);
+          setActiveTab(clubId);
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((err) => console.log(err));
+
+      // Check if user follows this club
+      api
+        .get(`/user/${user.user_id}/follows/${clubId}/`)
+        .then((response) => setUserFollowsClub(response.data));
     }
-  }, [user]);
+  }, [user, clubId]);
 
-  // Get the club data
-  useEffect(() => {
-    api
-      .get(`/api/clubs/${clubId}/`)
-      .then((res) => {
-        setClub(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      }, []);
-  }, [clubId]);
-
-  // Get the events for this club
-  useEffect(() => {
-    api
-      .get(`/club/${clubId}/events/`)
-      .then((res) => {
-        setEvents(res.data);
-        setActiveTab(clubId);
-      })
-      .catch((err) => {
-        console.log(err);
-      }, []);
-  }, [clubId]);
-
-  // Get if the User follows this club
-  useEffect(() => {
-    if (user.user_id) {
-      api.get(`/user/${user.user_id}/follows/${clubId}/`).then((response) => {
-        setUserFollowsClub(response.data);
-      });
-    }
-  }, [clubId, user.user_id]);
-
-  // Follow or unfollow the club
   const handleClickFollow = () => {
-    if (userFollowsClub) {
-      api
-        .delete(`/user/${user.user_id}/follows/${clubId}/`)
-        .then((response) => {
-          setUserFollowsClub(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      api
-        .post(`/api/follows/`, { user: user.user_id, club: clubId })
-        .then((response) => {
-          setUserFollowsClub(true);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    const action = userFollowsClub ? api.delete : api.post;
+    const url = userFollowsClub
+      ? `/user/${user.user_id}/follows/${clubId}/`
+      : `/api/follows/`;
+    const data = userFollowsClub
+      ? undefined
+      : { user: user.user_id, club: clubId };
+
+    action(url, data)
+      .then(() => setUserFollowsClub(!userFollowsClub))
+      .catch((err) => console.log(err));
   };
 
   const handleClickCreateEvent = () => {
@@ -103,7 +79,7 @@ export default function ClubProfilePage() {
         <div>
           <img
             className="h-32 w-full object-cover lg:h-48"
-            src={club.club_cover}
+            src={club.club_cover || clubCover}
             alt=""
           />
         </div>
@@ -112,7 +88,7 @@ export default function ClubProfilePage() {
             <div className="flex">
               <img
                 className="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32"
-                src={club.club_logo}
+                src={club.club_logo || clubLogo}
                 alt=""
               />
             </div>

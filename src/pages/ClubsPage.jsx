@@ -5,6 +5,7 @@ import { Container } from "../components/globals/Container";
 import useAxios from "../utils/useAxios";
 import Layout from "../components/Layout";
 import AuthContext from "../context/AuthContext";
+import clubLogo from "../images/default/default_club_logo.jpg";
 
 export default function ClubsPage() {
   const activeTab = "Clubs";
@@ -40,7 +41,6 @@ export default function ClubsPage() {
     api
       .post(`/api/follows/`, { user: user.user_id, club: clubId })
       .then((response) => {
-        console.log(response);
         setChangedFollows(!changedFollows);
       })
       .catch((err) => {
@@ -51,7 +51,6 @@ export default function ClubsPage() {
     api
       .delete(`/user/${user.user_id}/follows/${clubId}/`)
       .then((response) => {
-        console.log(response);
         setChangedFollows(!changedFollows);
       })
       .catch((err) => {
@@ -72,8 +71,7 @@ export default function ClubsPage() {
                 <Link to={`${SITE_URL}/club/${club.id}`}>
                   <img
                     className="mx-auto h-32 w-32 flex-shrink-0 rounded-full"
-                    //   Replace with club logo
-                    src={club.club_logo}
+                    src={club.club_logo || clubLogo}
                     alt="Club Logo"
                   />
                   <h3 className="mt-6 text-sm font-medium text-gray-900">

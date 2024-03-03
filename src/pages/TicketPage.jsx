@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import logo from "../images/bynle-high-resolution-logo-black-transparent.png";
 import SpinningMouse from "../components/coolComponents/SpinningMouse";
 import NotAllowed from "./NotAllowed";
+import clubLogo from "../images/default/default_club_logo.jpg";
 
 function TicketPage() {
   const api = useAxios();
@@ -109,7 +110,7 @@ function TicketPage() {
                       <div className="flex flex-col mx-auto">
                         {/* Change with Club Photo */}
                         <img
-                          src={club.club_logo}
+                          src={club.club_logo || clubLogo}
                           className="h-24 w-auto p-1"
                           alt="Club logo"
                         />

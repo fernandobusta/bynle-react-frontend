@@ -8,6 +8,7 @@ import { InformationAlert } from "../../components/alerts/Alert";
 import { useParams } from "react-router-dom";
 import ClubSettingsLayout from "../../components/clubSettings/ClubSettingsLayout";
 import NotFound from "../NotFound";
+import eventCover from "../../images/default/default_event_cover.jpg";
 const swal = require("sweetalert2");
 
 function classNames(...classes) {
@@ -227,7 +228,7 @@ function ClubManageEventsPage() {
                         <div className="relative h-40 sm:h-56">
                           <img
                             className="absolute h-full w-full object-cover"
-                            src={events[openEvent].event_cover}
+                            src={events[openEvent].event_cover || eventCover}
                             alt={events[openEvent].title}
                           />
                         </div>

@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { SITE_URL } from "../components/Constants";
+import eventCover from "../images/default/default_event_cover.jpg";
+import clubLogo from "../images/default/default_club_logo.jpg";
 
 export default function EventGallery(props) {
   return (
@@ -16,7 +18,7 @@ export default function EventGallery(props) {
             <Link to={`${SITE_URL}/event/${event.id}`} key={event.id}>
               <article className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl bg-gray-900 px-8 pb-8 pt-80 sm:pt-48 lg:pt-80 max-h-9">
                 <img
-                  src={event.event_cover}
+                  src={event.event_cover || eventCover}
                   alt=""
                   className="absolute inset-0 -z-10 h-full w-full object-cover"
                 />
@@ -40,7 +42,7 @@ export default function EventGallery(props) {
                     </svg>
                     <div className="flex gap-x-2.5">
                       <img
-                        src={event.club_logo}
+                        src={event.club_logo || clubLogo}
                         alt=""
                         className="h-6 w-6 flex-none rounded-full bg-white/10"
                       />

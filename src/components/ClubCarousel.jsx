@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { SITE_URL } from "../components/Constants";
+import clubLogo from "../images/default/default_club_logo.jpg";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -44,7 +45,7 @@ export default function ClubCarousel({ clubs }) {
         >
           <img
             className=" h-24 w-24 rounded-full ring-1 ring-white hover:ring-2 hover:ring-blue-900"
-            src={club.club_logo}
+            src={club.club_logo || clubLogo}
             alt=""
           />
           <h3 className="mt-2 text-base font-semibold leading-7 tracking-tight text-gray-900">

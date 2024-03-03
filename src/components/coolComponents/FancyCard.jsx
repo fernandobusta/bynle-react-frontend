@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/fancycard.css";
+import eventCover from "../../images/default/default_event_cover.jpg";
 
 // Source: https://uiverse.io/ElSombrero2/tricky-robin-67
 function FancyCard({ event }) {
@@ -9,7 +10,7 @@ function FancyCard({ event }) {
         <div class="fancycard-back">
           <div class="fancycard-back-content">
             <img
-              src={event.event_cover}
+              src={event.event_cover || eventCover}
               className="rounded-full object-cover w-24 h-24"
               alt="event"
             />
