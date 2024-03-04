@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (
     email,
     username,
-    student_id,
     first_name,
     last_name,
     course,
@@ -96,7 +95,6 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({
         email,
         username,
-        student_id,
         first_name,
         last_name,
         account_type,
@@ -128,7 +126,6 @@ export const AuthProvider = ({ children }) => {
         title:
           data.email ||
           data.username ||
-          data.student_id ||
           data.password ||
           data.password2 ||
           data.course ||

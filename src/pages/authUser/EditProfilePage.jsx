@@ -1,10 +1,42 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import useAxios from "../../utils/useAxios";
 import AuthContext from "../../context/AuthContext";
 import Layout from "../../components/Layout";
 import { Container } from "../../components/globals/Container";
-import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { RadioGroup } from "@headlessui/react";
+import { UserCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 const swal = require("sweetalert2");
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const accountOptions = [
+  {
+    id: 1,
+    title: "Public Account",
+    code: "PUB",
+    description:
+      "Anyone can see the events you are attending and your public profile.",
+    users: "Meet new people!",
+  },
+  {
+    id: 2,
+    title: "Private Account",
+    code: "PRI",
+    description:
+      "Only your friends can see the events you are attending. But your public profile is still visible.",
+    users: "Just my friends!",
+  },
+  {
+    id: 3,
+    title: "Closed Account",
+    code: "CLO",
+    description:
+      "Are you only here to buy tickets? With a closed account, no one can see your profile.",
+    users: "Keep me hidden!",
+  },
+];
 
 function EditProfilePage() {
   const api = useAxios();
@@ -23,6 +55,57 @@ function EditProfilePage() {
   const [course, setCourse] = useState("");
   const [year, setYear] = useState(0);
   const [description, setDescription] = useState("");
+
+  const [selectedAccountType, setSelectedAccountType] = useState("");
+
+  // Get the account type of the user
+  useEffect(() => {
+    api
+      .get(`/api/users/${user.user_id}/account_type/`)
+      .then((res) => {
+        console.log(res.data.account_type);
+        setSelectedAccountType(
+          accountOptions.find((a) => a.code === res.data.account_type)
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [user.user_id]);
+
+  const changeAccountType = (e) => {
+    e.preventDefault();
+    api
+      .patch(`/api/users/${user.user_id}/change_account_type/`, {
+        account_type: selectedAccountType.code,
+      })
+      .then((res) => {
+        swal.fire({
+          title: "Account changed successfully",
+          icon: "success",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+        console.log(res);
+      })
+      .catch((err) => {
+        if (err.response && err.response.data) {
+          swal.fire({
+            title: "Could not change account",
+            text: err.response.data.account_type,
+            icon: "error",
+            toast: true,
+            timer: 3000,
+            position: "top-right",
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        }
+      });
+  };
 
   // If they cancel the form
   const handleCancel = () => {
@@ -94,6 +177,90 @@ function EditProfilePage() {
           });
         }
       });
+  };
+
+  const editAccountSelector = () => {
+    return (
+      <div className="mt-10">
+        <RadioGroup
+          value={selectedAccountType}
+          onChange={setSelectedAccountType}
+        >
+          <RadioGroup.Label className="text-base font-semibold leading-6 text-gray-900">
+            Edit Account Type
+          </RadioGroup.Label>
+
+          <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
+            {accountOptions.map((account) => (
+              <RadioGroup.Option
+                key={account.id}
+                value={account}
+                className={({ active }) =>
+                  classNames(
+                    active
+                      ? "border-indigo-600 ring-2 ring-indigo-600"
+                      : "border-gray-300",
+                    "relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none"
+                  )
+                }
+              >
+                {({ checked, active }) => (
+                  <>
+                    <span className="flex flex-1">
+                      <span className="flex flex-col">
+                        <RadioGroup.Label
+                          as="span"
+                          className="block text-sm font-medium text-gray-900"
+                        >
+                          {account.title}
+                        </RadioGroup.Label>
+                        <RadioGroup.Description
+                          as="span"
+                          className="mt-1 flex items-center text-sm text-gray-500"
+                        >
+                          {account.description}
+                        </RadioGroup.Description>
+                        <RadioGroup.Description
+                          as="span"
+                          className="mt-6 text-sm font-medium text-gray-900"
+                        >
+                          {account.users}
+                        </RadioGroup.Description>
+                      </span>
+                    </span>
+                    <CheckCircleIcon
+                      className={classNames(
+                        !checked ? "invisible" : "",
+                        "h-5 w-5 text-indigo-600"
+                      )}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={classNames(
+                        active ? "border" : "border-2",
+                        checked ? "border-indigo-600" : "border-transparent",
+                        "pointer-events-none absolute -inset-px rounded-lg"
+                      )}
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
+              </RadioGroup.Option>
+            ))}
+          </div>
+        </RadioGroup>
+        <form onSubmit={changeAccountType}>
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+              type="submit"
+              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Update Account Type
+            </button>
+          </div>
+        </form>
+      </div>
+    );
   };
 
   return (
@@ -238,6 +405,7 @@ function EditProfilePage() {
           </div>
         </form>
 
+        {editAccountSelector()}
         {/* <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
           <div>
             <h2 className="text-base font-semibold leading-7 text-black">
