@@ -16,6 +16,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+function secureUrl(url) {
+  return url.replace(/^http:/, "https:");
+}
+
 function HomePage() {
   const activeTab = "Home";
   const api = useAxios();
@@ -37,7 +41,7 @@ function HomePage() {
     try {
       const response = await api.get(nextPageUrl);
       setEvents((prevEvents) => [...prevEvents, ...response.data.results]);
-      setNextPageUrl(response.data.next);
+      setNextPageUrl(secureUrl(response.data.next));
     } catch (error) {
       console.log(error);
     }
@@ -54,7 +58,7 @@ function HomePage() {
         ...prevEvents,
         ...response.data.results,
       ]);
-      setNextFollowedClubEventsUrl(response.data.next);
+      setNextFollowedClubEventsUrl(secureUrl(response.data.next));
     } catch (error) {
       console.log(error);
     }
