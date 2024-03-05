@@ -21,6 +21,7 @@ function PublicUserProfilePage() {
 
   const [friendship, setFriendship] = useState("");
   const [friendshipChanged, setFriendshipChanged] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const [friendsInCommon, setFriendsInCommon] = useState([]); // This is for the friends in common
   const [eventsActive, setEventsActive] = useState([]); // This is for the events the user is attending
@@ -34,6 +35,7 @@ function PublicUserProfilePage() {
       .then((res) => {
         setPublicProfile(res.data);
         setFriendship(res.data.friendship_status);
+        setShowDetails(res.data.show_details);
       })
       .catch((err) => {
         console.log(err);
@@ -42,7 +44,7 @@ function PublicUserProfilePage() {
 
   // Get the events the user is attending
   useEffect(() => {
-    if (friendship !== "closed") {
+    if (friendship !== "closed" && showDetails) {
       api
         .get(`user/${username}/events/`)
         .then((res) => {
