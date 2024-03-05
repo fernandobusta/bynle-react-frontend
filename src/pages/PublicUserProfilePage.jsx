@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Container } from "../components/globals/Container";
 import Layout from "../components/Layout";
 import useAxios from "../utils/useAxios";
@@ -9,6 +9,15 @@ import AuthContext from "../context/AuthContext";
 import userPicture from "../images/default/default_profile_picture.jpg";
 import clubLogo from "../images/default/default_club_logo.jpg";
 
+const FRIENDSHIP_STATUS = {
+  CLOSED: "closed",
+  ACCEPT: "accept",
+  PENDING: "pending",
+  NONE: "none",
+  FRIENDS: "friends",
+  YOU: "you",
+};
+
 function PublicUserProfilePage() {
   const activeTab = "Friends";
 
@@ -16,11 +25,8 @@ function PublicUserProfilePage() {
   const { username } = useParams();
   const api = useAxios();
 
-  // If they are friends, or account is public:
   const [publicProfile, setPublicProfile] = useState({}); // This is for the public profile
-
   const [friendship, setFriendship] = useState("");
-  const [friendshipChanged, setFriendshipChanged] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
   const [friendsInCommon, setFriendsInCommon] = useState([]); // This is for the friends in common
@@ -28,8 +34,7 @@ function PublicUserProfilePage() {
   const [eventsUsed, setEventsUsed] = useState([]); // This is for the events the user is attending
   const [clubsInCommon, setClubsInCommon] = useState([]); // This is for the clubs in common
 
-  // Get public profile
-  useEffect(() => {
+  const fetchPublicProfile = useCallback(() => {
     api
       .get(`/user/${username}/public-profile/`)
       .then((res) => {
@@ -38,75 +43,112 @@ function PublicUserProfilePage() {
         setShowDetails(res.data.show_details);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
-  }, [username, friendshipChanged]);
+  }, [username]);
+
+  useEffect(() => {
+    fetchPublicProfile();
+  }, [fetchPublicProfile]);
 
   // Get the events the user is attending
   useEffect(() => {
-    if (friendship !== "closed" && showDetails) {
+    if (friendship !== FRIENDSHIP_STATUS.CLOSED && showDetails) {
       api
         .get(`user/${username}/events/`)
         .then((res) => {
           setEventsActive(res.data.active);
           setEventsUsed(res.data.used);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
-  }, [username, friendship]);
+  }, [username, friendship, showDetails]);
 
   // Get the friends in common
   useEffect(() => {
-    if (friendship !== "closed") {
+    if (friendship !== FRIENDSHIP_STATUS.CLOSED) {
       api
         .get(`common-friends/${user.user_id}/${username}/`)
         .then((res) => {
           setFriendsInCommon(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [user.user_id, username, friendship]);
 
   // Get the common clubs followed
   useEffect(() => {
-    if (friendship !== "closed") {
+    if (friendship !== FRIENDSHIP_STATUS.CLOSED) {
       api
         .get(`common-followed-clubs/${user.user_id}/${username}/`)
         .then((res) => {
           setClubsInCommon(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [user.user_id, username, friendship]);
 
   const handleDelete = (e) => {
     e.preventDefault();
-    setFriendshipChanged(!friendshipChanged);
-    api.delete(`user/${user.user_id}/friendship/${username}/`).catch((err) => {
-      console.log(err);
-    });
-    window.location.reload(false);
+    api
+      .delete(`user/${user.user_id}/friendship/${username}/`)
+      .then(() => {
+        // Fetch the updated friendship status from the server
+        api
+          .get(`/user/${username}/public-profile/`)
+          .then((res) => {
+            setFriendship(res.data.friendship_status);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
   const handleApprove = (e) => {
     e.preventDefault();
-    setFriendshipChanged(!friendshipChanged);
-    api.post(`user/${user.user_id}/friendship/${username}/`).catch((err) => {
-      console.log(err);
-    });
-    window.location.reload(false);
+    api
+      .post(`user/${user.user_id}/friendship/${username}/`)
+      .then(() => {
+        // Fetch the updated friendship status from the server
+        api
+          .get(`/user/${username}/public-profile/`)
+          .then((res) => {
+            setFriendship(res.data.friendship_status);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
   const handleAdd = (e) => {
     e.preventDefault();
-    setFriendshipChanged(!friendshipChanged);
     api
       .post("create-friend-request/", {
         sender: user.user_id,
         receiver: username,
       })
+      .then(() => {
+        // Fetch the updated friendship status from the server
+        api
+          .get(`/user/${username}/public-profile/`)
+          .then((res) => {
+            setFriendship(res.data.friendship_status);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
       .catch((err) => {
         console.log(err);
       });
-    window.location.reload(false);
   };
 
   const showOnFriendship = () => {
