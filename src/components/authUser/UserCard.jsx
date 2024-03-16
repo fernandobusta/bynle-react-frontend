@@ -62,7 +62,7 @@ export default function UserCard(props) {
         {/* Either Change details or See other students, or nothing at all, placeholder atm */}
         <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
           <Link
-            to="/edit-profile"
+            to="edit"
             className="text-sm font-semibold leading-6 text-gray-900"
           >
             Change Details <span aria-hidden="true">&rarr;</span>

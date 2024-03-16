@@ -1,18 +1,15 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
 import "../styles/stripestyle.css";
-import AuthContext from "../context/AuthContext";
-import useAxios from "../utils/useAxios";
 
 export default function CheckoutUserForm(props) {
   const stripe = useStripe();
   const elements = useElements();
-  const { user } = useContext(AuthContext);
-  const api = useAxios();
+
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,7 +59,7 @@ export default function CheckoutUserForm(props) {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: `${process.env.REACT_APP_SITE_URL}/stripe-success-transfer-payment/${props.transfer.id}`,
+        return_url: `${process.env.REACT_APP_SITE_URL}/tickets/stripe-success-transfer-payment/${props.transfer.id}`,
       },
     });
 
