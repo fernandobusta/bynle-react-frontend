@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SITE_URL } from "../components/Constants";
 import clubLogo from "../images/default/default_club_logo.jpg";
 
 import Carousel from "react-multi-carousel";
@@ -39,12 +38,12 @@ export default function ClubCarousel({ clubs }) {
     >
       {clubs.map((club) => (
         <Link
-          to={`${SITE_URL}/club/${club.id}`}
+          to={`clubs/${club.id}`}
           key={club.id}
           className="grid justify-items-center mt-1"
         >
           <img
-            className=" h-24 w-24 rounded-full ring-1 ring-white hover:ring-2 hover:ring-blue-900"
+            className=" h-24 w-24 rounded-full ring-1 ring-white hover:ring-2 hover:ring-blue-900 object-cover"
             src={club.club_logo || clubLogo}
             alt=""
           />

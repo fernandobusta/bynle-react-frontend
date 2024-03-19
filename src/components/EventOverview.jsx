@@ -1,15 +1,17 @@
-import { CheckIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/20/solid";
+
 import { useNavigate } from "react-router-dom";
-import useAxios from "../utils/useAxios";
-import { useContext } from "react";
-import AuthContext from "../context/AuthContext";
+
+import useAxios from "../hooks/useAxios";
+import { useAuth } from "../hooks/useAuth";
 import eventCover from "../images/default/default_event_cover.jpg";
+
 const swal = require("sweetalert2");
 
 export default function EventOverview(props) {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const api = useAxios();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ export default function EventOverview(props) {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          navigate(`/my-tickets`);
+          navigate(`/tickets`);
         })
         .catch((err) => {
           console.log(err);
@@ -58,7 +60,7 @@ export default function EventOverview(props) {
           });
         });
     } else {
-      navigate(`/event/${props.eventId}/payment`);
+      navigate(`/events/${props.eventId}/payment`);
     }
   };
   return (

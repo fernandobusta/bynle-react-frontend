@@ -11,18 +11,19 @@ import {
 
 export const navigation = [
   { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Clubs", href: "/clubs", icon: UsersIcon },
+  { name: "Clubs", href: "clubs", icon: UsersIcon },
   // { name: "Projects", href: "#", icon: FolderIcon },
-  { name: "Events", href: "/events", icon: CalendarIcon },
+  { name: "Events", href: "events", icon: CalendarIcon },
+  // { name: "Test club 1", href: "clubs/1", icon: CalendarIcon },
+  // { name: "Test club 2", href: "clubs/2", icon: CalendarIcon },
   {
     name: "My Tickets",
-    href: "/my-tickets",
+    href: "tickets",
     icon: DocumentDuplicateIcon,
-    current: false,
   },
   // { name: "Reports", href: "#", icon: ChartPieIcon },
-  { name: "Create Club", href: "/create-club", icon: PlusCircleIcon },
-  { name: "Friends", href: "/my-friends", icon: UserGroupIcon },
+  { name: "Create Club", href: "clubs/create", icon: PlusCircleIcon },
+  { name: "Friends", href: "friends", icon: UserGroupIcon },
 ];
 
 export const SITE_URL = process.env.REACT_APP_SITE_URL;

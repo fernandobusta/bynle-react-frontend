@@ -21,7 +21,7 @@ export default function FollowTable(props) {
               />
               <div className="min-w-0 flex-auto">
                 <p className="text-sm font-semibold leading-6 text-gray-900">
-                  <a href={`/club/${club.id}`}>
+                  <a href={`clubs/${club.id}`}>
                     <span className="absolute inset-x-0 -top-px bottom-0" />
                     {club.name}
                   </a>

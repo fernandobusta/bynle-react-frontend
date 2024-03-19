@@ -58,7 +58,7 @@ export default function CheckoutForm(props) {
       elements,
       confirmParams: {
         // Payment completion page
-        return_url: `${process.env.REACT_APP_SITE_URL}/stripe-payment-successful/${props.event.id}`,
+        return_url: `${process.env.REACT_APP_SITE_URL}/events/${props.event.id}/success`,
       },
     });
 

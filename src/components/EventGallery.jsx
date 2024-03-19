@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SITE_URL } from "../components/Constants";
 import eventCover from "../images/default/default_event_cover.jpg";
 import clubLogo from "../images/default/default_club_logo.jpg";
 
@@ -9,8 +8,8 @@ export default function EventGallery(props) {
     <div className={`bg-white ${props.className}`}>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto mt-6 grid max-w-2xl auto-rows-fr grid-cols-1 gap-8 sm:mt-4 lg:mx-0 lg:max-w-none lg:grid-cols-3 md:grid-cols-2">
-          {props.events.map((event) => (
-            <Link to={`${SITE_URL}/event/${event.id}`} key={event.id}>
+          {props.events.map((event, eventIdx) => (
+            <Link to={`/events/${event.id}`} key={eventIdx}>
               <article className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl bg-gray-900 px-8 pb-8 pt-80 sm:pt-48 lg:pt-80 max-h-9">
                 <img
                   src={event.event_cover || eventCover}

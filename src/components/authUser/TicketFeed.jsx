@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   CheckIcon,
   HandThumbUpIcon,
@@ -59,9 +60,9 @@ export default function TicketFeed(props) {
                 </div>
                 <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                   <div>
-                    <a href={`/my-tickets/${ticket.id}`}>
+                    <Link to={`tickets/${ticket.id}`}>
                       <p className="text-sm text-gray-500">{ticket.title}</p>
-                    </a>
+                    </Link>
                   </div>
                   <div className="whitespace-nowrap text-right text-sm text-gray-500">
                     {ticket.status === "A" ? (
